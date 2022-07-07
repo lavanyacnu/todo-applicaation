@@ -4,7 +4,7 @@ const sqlite3 = require("sqlite3");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const addDays = require( "date-fns");
+const addDays = require("date-fns");
 
 const databasePath = path.join(__dirname, "todoApplication.db");
 
@@ -99,7 +99,7 @@ pp.get("/todos/", async (request, response) => {
         todo LIKE '%${search_q}%'
         AND status = '${status}';`;
       break;
-      case hasCategoryAndStatusProperties(request.query):
+    case hasCategoryAndStatusProperties(request.query):
       getTodosQuery = `
       SELECT
         *
@@ -110,7 +110,7 @@ pp.get("/todos/", async (request, response) => {
         AND status = '${status}'
         AND category = '${category}';`;
       break;
-       case hasCategoryProperty(request.query):
+    case hasCategoryProperty(request.query):
       getTodosQuery = `
       SELECT
         *
@@ -120,7 +120,7 @@ pp.get("/todos/", async (request, response) => {
         todo LIKE '%${search_q}%'
         AND category= '${category}';`;
       break;
-      case hasCategoryAndPriorityProperties (request.query):
+    case hasCategoryAndPriorityProperties(request.query):
       getTodosQuery = `
       SELECT
         *
@@ -131,21 +131,20 @@ pp.get("/todos/", async (request, response) => {
         AND priority= '${priority}'
         AND category = '${category}';`;
       break;
-      default:
-           getTodosQuery = `
+    default:
+      getTodosQuery = `
       SELECT
         *
       FROM
         todo 
       WHERE
         todo LIKE '%${search_q}%';`;
-     data = await database.all(getTodosQuery);
-  response.send(data);
+      data = await database.all(getTodosQuery);
+      response.send(data);
+  }
 });
 
-
 //API-2
-
 
 app.get("/todos/:todoId/", async (request, response) => {
   const { todoId } = request.params;
@@ -161,13 +160,12 @@ app.get("/todos/:todoId/", async (request, response) => {
   response.send(todo);
 });
 
-
 //API-3
 app.get("/agenda/", async (request, response) => {
   let data = null;
   let getTodosQuery = "";
-  const date= format(new Date(2021, 12, 12),'yyyy-MM-dd')
-    const {due_date } = request.query;
+  const date = format(new Date(2021, 12, 12), "yyyy-MM-dd");
+  const { due_date } = request.query;
   getTodosQuery = `
       SELECT
         *
@@ -176,6 +174,9 @@ app.get("/agenda/", async (request, response) => {
       WHERE
        due_date ='${date}';`;
 
+  const result = await database.get(getTodosQuery);
+  response.send(result);
+});
 
 //API-4
 
@@ -185,14 +186,12 @@ app.post("/todos/", async (request, response) => {
   INSERT INTO
     todo (id, todo, category, priority, status, due_date)
   VALUES
-    (${id}, '${todo}', '${category}','${priority}', '${status}' '${ due_date}');`;
+    (${id}, '${todo}', '${category}','${priority}', '${status}' '${due_date}');`;
   await database.run(postTodoQuery);
   response.send("Todo Successfully Added");
 });
 
-
 //API-5
-
 
 app.put("/todos/:todoId/", async (request, response) => {
   const { todoId } = request.params;
@@ -208,11 +207,11 @@ app.put("/todos/:todoId/", async (request, response) => {
     case requestBody.todo !== undefined:
       updateColumn = "Todo";
       break;
-    case requestBody.category!==undefined:
-        updateColumn="Category";
-        break;
-    case requestBody.due_date!==undefined:
-        updateColumn="Due Date";
+    case requestBody.category !== undefined:
+      updateColumn = "Category";
+      break;
+    case requestBody.due_date !== undefined:
+      updateColumn = "Due Date";
   }
   const previousTodoQuery = `
     SELECT
@@ -227,8 +226,8 @@ app.put("/todos/:todoId/", async (request, response) => {
     todo = previousTodo.todo,
     priority = previousTodo.priority,
     status = previousTodo.status,
-    category =previousTodo.category,
-    due_date =previousTodo.due_date
+    category = previousTodo.category,
+    due_date = previousTodo.due_date,
   } = request.body;
 
   const updateTodoQuery = `
@@ -249,7 +248,6 @@ app.put("/todos/:todoId/", async (request, response) => {
 
 //API-6
 
-
 app.delete("/todos/:todoId/", async (request, response) => {
   const { todoId } = request.params;
   const deleteTodoQuery = `
@@ -263,5 +261,3 @@ app.delete("/todos/:todoId/", async (request, response) => {
 });
 
 module.exports = app;
-
-
