@@ -62,8 +62,7 @@ const hasCategoryAndPriorityProperties = (requestQuery) => {
   );
 };
 
-pp.get("/todos/", async (request, response) => {
-  let data = null;
+app.get("/todos/", async (request, response) => {
   let getTodosQuery = "";
   const { search_q = "", priority, status, category } = request.query;
 
@@ -139,7 +138,7 @@ pp.get("/todos/", async (request, response) => {
         todo 
       WHERE
         todo LIKE '%${search_q}%';`;
-      data = await database.all(getTodosQuery);
+      const data = await database.all(getTodosQuery);
       response.send(data);
   }
 });
@@ -164,8 +163,9 @@ app.get("/todos/:todoId/", async (request, response) => {
 app.get("/agenda/", async (request, response) => {
   let data = null;
   let getTodosQuery = "";
-  const date = format(new Date(2021, 12, 12), "yyyy-MM-dd");
   const { due_date } = request.query;
+  const date = format(new Date({ due_date }), "yyyy-MM-dd");
+
   getTodosQuery = `
       SELECT
         *
